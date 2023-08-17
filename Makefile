@@ -30,11 +30,11 @@ fbuild: virtualenv ## Build collection archive forecefully
 
 .PHONY: publish
 publish: clean build ## Publish collection
-	$(ANSIBLE_GALAXY) collection publish *.tar.gz --api-key ${GALAXY_API_KEY}
+	$(ANSIBLE_GALAXY) collection publish *.tar.gz --api-key $(GALAXY_API_KEY)
 
 .PHONY: fpublish
 fpublish: clean fbuild ## Publish collection forecfully
-	$(ANSIBLE_GALAXY) collection publish *.tar.gz --api-key ${GALAXY_API_KEY}
+	$(ANSIBLE_GALAXY) collection publish *.tar.gz --api-key $(GALAXY_API_KEY)
 
 .PHONY: clean
 clean: ## Remove temporary files

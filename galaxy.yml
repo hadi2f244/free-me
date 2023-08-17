@@ -12,9 +12,6 @@ authors:
 
 description: Ansible collection containing proxy and vpn clients
 
-license:
-- GPL-2.0-or-later
-
 license_file: 'LICENSE'
 
 tags:

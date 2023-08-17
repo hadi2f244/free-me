@@ -1,6 +1,6 @@
 galaxy_info:
   author: Hadi Azaddel <m.h.azaddel@gmail.com>
-  description: Ansible role dns-proxy
+  description: Ansible role dns_proxy
 
   license: MIT
 

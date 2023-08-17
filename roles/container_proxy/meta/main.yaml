@@ -1,6 +1,6 @@
 galaxy_info:
   author: Hadi Azaddel <m.h.azaddel@gmail.com>
-  description: Ansible role container-proxy
+  description: Ansible role container_proxy
 
   license: MIT
 

@@ -1,6 +1,6 @@
 galaxy_info:
   author: Hadi Azaddel <m.h.azaddel@gmail.com>
-  description: Ansible role apt-proxy
+  description: Ansible role apt_proxy
 
   license: MIT
 

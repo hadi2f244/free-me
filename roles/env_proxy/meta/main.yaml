@@ -1,6 +1,6 @@
 galaxy_info:
   author: Hadi Azaddel <m.h.azaddel@gmail.com>
-  description: Ansible role env-proxy
+  description: Ansible role env_proxy
 
   license: MIT
 

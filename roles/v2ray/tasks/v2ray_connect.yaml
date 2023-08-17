@@ -88,7 +88,7 @@
 
 - name: env_proxy connect
   include_role:
-    name: "free-me/env_proxy"
+    name: "hadi2f244.free_me.env_proxy"
   vars:
     connected: true
     http_proxy: "http://127.0.0.1:{{proxy_http_port}}"

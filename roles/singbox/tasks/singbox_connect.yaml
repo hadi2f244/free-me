@@ -95,7 +95,7 @@
 
 - name: env_proxy connect
   include_role:
-    name: "free-me/env_proxy"
+    name: "hadi2f244.free_me.env_proxy"
   vars:
     connected: true
     http_proxy: "http://127.0.0.1:{{proxy_port}}"
@@ -104,7 +104,7 @@
 
 - name: apt_proxy connect
   include_role:
-    name: "free-me/apt_proxy"
+    name: "hadi2f244.free_me.apt_proxy"
   vars:
     connected: true
     http_proxy: "http://127.0.0.1:{{proxy_port}}"
@@ -113,7 +113,7 @@
 
 - name: container_proxy connect
   include_role:
-    name: "free-me/container_proxy"
+    name: "hadi2f244.free_me.container_proxy"
   vars:
     connected: true
     http_proxy: "http://127.0.0.1:{{proxy_port}}"

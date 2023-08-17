@@ -1,8 +1,8 @@
 ---
 
-- name: env_proxy disconnect
+- name: env-proxy disconnect
   include_role:
-    name: "free-me/env_proxy"
+    name: "hadi2f244.free_me.env-proxy"
   vars:
     connected: false
   when: use_freeme == true

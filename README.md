@@ -10,5 +10,8 @@ Ansible collection containing proxy and vpn clients
 
 # Contribution
 
+# Todo
++ roles dependencies and documentation
+
 # Refrence
 [Make file usage for collection](https://github.com/andreygubarev/ansible-proxy/blob/main/Makefile)

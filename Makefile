@@ -21,16 +21,20 @@ lint: virtualenv ## Lint Ansible code
 	@$(ANSIBLE_LINT) -v --exclude ansible_collections
 
 .PHONY: build
-build: lint ## Build collection archive after liniting
+build: lint ## Build collection archive
 	$(ANSIBLE_GALAXY) collection build
 
 .PHONY: fbuild
-fbuild: ## Build collection archive
+fbuild: virtualenv ## Build collection archive forecefully
 	$(ANSIBLE_GALAXY) collection build --force
 
 .PHONY: publish
 publish: clean build ## Publish collection
-	$(ANSIBLE_GALAXY) collection publish *.tar.gz --api-key $(GALAXY_API_KEY)
+	$(ANSIBLE_GALAXY) collection publish *.tar.gz --api-key ${GALAXY_API_KEY}
+
+.PHONY: fpublish
+fpublish: clean fbuild ## Publish collection forecfully
+	$(ANSIBLE_GALAXY) collection publish *.tar.gz --api-key ${GALAXY_API_KEY}
 
 .PHONY: clean
 clean: ## Remove temporary files

@@ -86,9 +86,9 @@
     path: "{{ v2ray_tmp_dir.path }}"
   check_mode: "{{ checkmode }}"
 
-- name: env-proxy connect
+- name: env_proxy connect
   include_role:
-    name: "free-me/env-proxy"
+    name: "free-me/env_proxy"
   vars:
     connected: true
     http_proxy: "http://127.0.0.1:{{proxy_http_port}}"

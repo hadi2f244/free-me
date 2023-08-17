@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Hadi Azaddel <m.h.azaddel@gmail.com>
+  description: Ansible role ovpn
+
+  license: MIT
+
+  min_ansible_version: '5.6.0'
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - focal
+    - jammy
+
+  galaxy_tags: []
+
+dependencies: []

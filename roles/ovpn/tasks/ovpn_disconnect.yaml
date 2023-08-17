@@ -1,0 +1,43 @@
+---
+
+# TODO: avoid adding if rule exists!
+
+# - name: "Killall openvpn connection"
+#   shell: "killall openvpn"
+#   ignore_errors: true # In case there is no process
+
+# - name: "Killall openvpn connection"
+#   shell: "systemctl list-units -t service | grep -i 'openvpn@' | awk {'print $1'} | xargs systemctl stop"
+#   ignore_errors: true # In case there is no process
+
+- name: "Killall Openvpn Connection"
+  shell: "ps -ef | grep openvpn | grep -i '\\-\\-config' | awk '{print $2}' | sudo xargs --no-run-if-empty kill"
+  check_mode: "{{ checkmode }}"
+
+# Todo: Avoid to rewrite table with same name 121 if exists
+- name: Delete Appended Routes
+  shell: "ip route flush table 121; ip rule del lookup 121"
+  register: delete_routes
+  failed_when: 
+    - delete_routes is failed
+    - '"RTNETLINK answers: No such file or directory" not in delete_routes.stderr'
+  check_mode: "{{ checkmode }}"
+
+
+- name: Check normal connection 
+  uri:
+    url: "https://icanhazip.com"
+    method: GET
+    return_content: yes
+  check_mode: "{{ checkmode }}"
+
+- name: Delete OVPN Config Files
+  file:
+    path: "{{ freeme_ovpn_config_files_item }}"
+    state: absent
+  with_items:
+    - "/etc/openvpn/{{ openvpn_client_conf_file | basename }}"
+    - "/etc/openvpn/{{ openvpn_client_conf_file | basename | splitext | first }}-auth.txt"
+  check_mode: "{{ checkmode }}"
+  loop_control:
+    loop_var: freeme_ovpn_config_files_item

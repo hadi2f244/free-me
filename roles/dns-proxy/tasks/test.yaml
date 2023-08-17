@@ -1,0 +1,64 @@
+
+- include_tasks: dnsproxy_connect.yaml
+
+- name: Check if dnsproxy nameserver exists in /etc/resolve.conf
+  blockinfile:
+    path: /etc/resolv.conf
+    block: |
+        nameserver {{ dnsproxy_dns_1 }}
+        nameserver {{ dnsproxy_dns_2 }}
+    insertafter: "# operation for /etc/resolv.conf."
+  check_mode: true # avoid changing the file
+  register: presence
+  failed_when: presence.changed  # should not be change because the string block exists
+
+- name: Result of checking
+  debug:
+    msg: "{{ presence }}"
+
+
+- name: Check network over dnsproxy
+  uri:
+    url: "{{ check_site.site }}"
+    method: GET
+    return_content: yes
+  check_mode: false
+  register: curl_output
+  failed_when: " curl_output.status != check_site.open_status_code "
+
+# Todo: add verboose
+# - name: Check network over dnsproxy | details
+#   debug:
+#     msg: "{{ curl_output.status }}"
+
+
+- include_tasks: dnsproxy_disconnect.yaml
+
+- name: Check if dnsproxy nameserver exists in /etc/resolve.conf
+  blockinfile:
+    path: /etc/resolv.conf
+    block: |
+        nameserver {{ dnsproxy_dns_1 }}
+        nameserver {{ dnsproxy_dns_2 }}
+    insertafter: "# operation for /etc/resolv.conf."
+  check_mode: true # avoid changing the file
+  register: presence
+  failed_when: not presence.changed # should not be change because the string block has removed already
+
+- name: Result of checking
+  debug:
+    msg: "{{ presence }}"
+
+- name: Check network
+  uri:
+    url: "{{ check_site.site }}"
+    method: GET
+    return_content: yes
+  check_mode: false
+  register: curl_output
+  failed_when: " curl_output.status != check_site.restricted_status_code "
+
+
+# - name: Check network after disconnection | details
+#   debug:
+#     msg: "{{ curl_output.status }}"

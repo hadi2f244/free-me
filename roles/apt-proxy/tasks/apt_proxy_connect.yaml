@@ -1,0 +1,28 @@
+---
+
+- name: Create the file, if it doesnt exist already
+  file:
+    path: /etc/apt/apt.conf
+    state: touch
+  check_mode: "{{ checkmode }}"
+  
+- name: Config apt proxy
+  blockinfile:
+    path: "{{ apt_http_proxy_path_item }}"
+    create: yes
+    state: present
+    mode: 0644
+    group: root
+    owner: root
+    block: |
+        Acquire::http::Proxy "{{ http_proxy }}";
+        Acquire::https::Proxy "{{ https_proxy }}";
+    insertafter: EOF
+  check_mode: "{{ checkmode }}"
+  loop:
+    - "/etc/apt/apt.conf.d/20-proxy"
+    - "/etc/apt/apt.conf"
+  loop_control:
+    loop_var: apt_http_proxy_path_item
+
+

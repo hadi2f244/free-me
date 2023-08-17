@@ -1,0 +1,59 @@
+---
+
+- include_tasks: env_proxy_connect.yaml
+
+- name: Check if env vars exist in /etc/environment
+  blockinfile:
+    path: /etc/environment
+    block: |
+      http_proxy='{{ http_proxy }}'
+      https_proxy='{{ http_proxy }}';
+      HTTP_PROXY='{{ http_proxy }}';
+      HTTPS_PROXY='{{ http_proxy }}';
+    insertafter: EOF
+  check_mode: true # avoid changing the file
+  register: presence
+  failed_when: presence.changed # should not be change because the string block exists
+
+# - name: Result of checking
+#   debug:
+#     msg: "{{ presence }}"
+
+
+- name:  Curl example
+  shell: >
+    curl -i "{{ check_site.site }}"
+  register: curl_output
+  failed_when: curl_output.stdout is search("{{ check_site.restricted_string }}") or curl_output is failed
+- debug:
+    msg: "{{ curl_output }}"
+
+
+- include_tasks: env_proxy_disconnect.yaml
+
+
+- name: Check if env vars exist in /etc/environment
+  blockinfile:
+    path: /etc/environment
+    block: |
+      http_proxy='{{ http_proxy }}'
+      https_proxy='{{ http_proxy }}';
+      HTTP_PROXY='{{ http_proxy }}';
+      HTTPS_PROXY='{{ http_proxy }}';
+    insertafter: EOF
+  check_mode: true # avoid changing the file
+  register: presence
+  failed_when: not presence.changed # should not be change because the string block has removed already
+
+# - name: Result of checking
+#   debug:
+#     msg: "{{ presence }}"
+
+
+- name:  Curl example
+  shell: >
+    curl -i "{{ check_site.site }}"
+  register: curl_output
+  failed_when: not curl_output.stdout is search("{{ check_site.restricted_string }}") or curl_output is failed
+- debug:
+    msg: "{{ curl_output }}"

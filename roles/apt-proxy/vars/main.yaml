@@ -1,0 +1,9 @@
+---
+connected: false
+checkmode: no
+testmode: no
+
+use_freeme: true
+
+http_proxy: ""
+https_proxy: ""

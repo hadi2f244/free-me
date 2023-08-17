@@ -1,0 +1,9 @@
+---
+- name:  Delete dnsproxy records
+  blockinfile:
+    path: /etc/resolv.conf
+    state: absent
+    block: |
+        nameserver {{ dnsproxy_dns_1 }}
+        nameserver {{ dnsproxy_dns_2 }}
+  check_mode: "{{ checkmode }}"

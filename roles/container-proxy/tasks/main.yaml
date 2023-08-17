@@ -1,0 +1,12 @@
+- include_tasks: test.yaml
+  when: testmode == true
+
+- include_tasks: container_engine.yaml
+  when: connected == true and testmode == false
+  vars:
+    connect_disconnect: "connect"
+
+- include_tasks: container_engine.yaml
+  when: connected == false and testmode == false
+  vars:
+    connect_disconnect: "disconnect"

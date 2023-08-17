@@ -1,0 +1,5 @@
+openvpn_client_conf_file: "ovpn_con.conf"
+
+openvpn_client_user: ""
+
+openvpn_client_password: ""

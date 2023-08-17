@@ -1,0 +1,8 @@
+- name: "{{ container_engine_name }} | Remove http-proxy configs"
+  file:
+    path: "/etc/systemd/system/{{ container_engine_name }}.service.d/http-proxy.conf"
+    state: absent
+  notify: "restart {{ container_engine_name }}"
+
+- name:  Flush handlers
+  meta: flush_handlers

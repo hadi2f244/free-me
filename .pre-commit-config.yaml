@@ -1,0 +1,27 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: no-commit-to-branch
+        args: [--branch, main]
+  - repo: https://github.com/ansible-network/collection_prep
+    rev: 1.0.0
+    hooks:
+      - id: update-docs
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+  - repo: https://github.com/ansible-community/ansible-lint.git
+    rev: v6.0.2
+    hooks:
+      - id: ansible-lint
+        files: \.(yaml|yml)$

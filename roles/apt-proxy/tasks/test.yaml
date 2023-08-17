@@ -1,0 +1,46 @@
+---
+
+- include_tasks: apt_proxy_connect.yaml
+
+- name: Check if apt proxy exists in /etc/apt/apt.conf.d/20-proxy
+  blockinfile:
+    path: "/etc/apt/apt.conf.d/20-proxy"
+    create: yes
+    state: present
+    mode: 0644
+    group: root
+    owner: root
+    block: |
+        Acquire::http::Proxy "{{ http_proxy }}";
+        Acquire::https::Proxy "{{ https_proxy }}";
+    insertafter: EOF
+  check_mode: true # avoid changing the file
+  register: presence
+  failed_when: presence.changed  # should not be change because the string block exists
+
+- name: Result of checking
+  debug:
+    msg: "{{ presence }}"
+
+- include_tasks: apt_proxy_disconnect.yaml
+
+- name: Check if apt proxy exists in /etc/apt/apt.conf.d/20-proxy
+  blockinfile:
+    path: "/etc/apt/apt.conf.d/20-proxy"
+    create: yes
+    state: absent
+    mode: 0644
+    group: root
+    owner: root
+    block: |
+        Acquire::http::Proxy "{{ http_proxy }}";
+        Acquire::https::Proxy "{{ https_proxy }}";
+    insertafter: EOF
+  check_mode: true # avoid changing the file
+  register: presence
+  failed_when: not presence.changed # should not be change because the string block has removed already
+
+- name: Result of checking
+  debug:
+    msg: "{{ presence }}"
+

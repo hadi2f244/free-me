@@ -1,0 +1,140 @@
+{
+   "dns":{
+      "rules":[
+         {
+            "domain":[
+               "{{ sb_addr }}"
+            ],
+            "domain_keyword":[
+
+            ],
+            "domain_regex":[
+
+            ],
+            "domain_suffix":[
+
+            ],
+            "geosite":[
+
+            ],
+            "server":"dns-direct"
+         }
+      ],
+      "servers":[
+         {
+            "address":"https://8.8.8.8/dns-query",
+            "address_resolver":"dns-local",
+            "detour":"proxy",
+            "strategy":"",
+            "tag":"dns-remote"
+         },
+         {
+            "address":"local",
+            "address_resolver":"dns-local",
+            "detour":"direct",
+            "strategy":"",
+            "tag":"dns-direct"
+         },
+         {
+            "address":"local",
+            "detour":"direct",
+            "tag":"dns-local"
+         }
+      ]
+   },
+   "inbounds":[
+      {
+         "domain_strategy":"",
+         "listen":"127.0.0.1",
+         "listen_port": {{ proxy_port }},
+         "sniff":true,
+         "sniff_override_destination":false,
+         "tag":"mixed-in",
+         "type":"mixed"
+      }
+   ],
+   "log":{
+      "level":"info"
+   },
+   "outbounds":[
+      {
+         "domain_strategy":"",
+         "flow":"{{ sb_flow }}",
+         "server":"{{ sb_addr }}",
+         "server_port": {{ sb_port }},
+         "tag":"proxy",
+         "tls":{
+            "enabled":true,
+            "reality":{
+               "enabled":true,
+               "public_key":"{{ sb_publickey }}",
+               "short_id":"{{ sb_shortid }}"
+            },
+            "server_name":"{{ sb_sni }}",
+            "utls":{
+               "enabled":true,
+               "fingerprint":"chrome"
+            }
+         },
+         {% if sb_transport_enabled %}
+         "transport": {
+            "service_name": "{{ sb_transport_service_name }}",
+            "type": "{{ sb_transport_type }}"
+         },
+         {% endif %}
+         "type":"vless",
+         "uuid":"{{ sb_uuid }}"
+      },
+      {
+         "tag":"direct",
+         "type":"direct"
+      },
+      {
+         "tag":"bypass",
+         "type":"direct"
+      },
+      {
+         "tag":"block",
+         "type":"block"
+      },
+      {
+         "tag":"dns-out",
+         "type":"dns"
+      }
+   ],
+   "route":{
+      "auto_detect_interface":false,
+      "final":"proxy",
+      "rules":[
+         {
+            "outbound":"dns-out",
+            "protocol":"dns"
+         },
+         {
+            "network":"udp",
+            "outbound":"block",
+            "port":[
+               135,
+               137,
+               138,
+               139,
+               5353
+            ]
+         },
+         {
+            "ip_cidr":[
+               "224.0.0.0/3",
+               "ff00::/8"
+            ],
+            "outbound":"block"
+         },
+         {
+            "outbound":"block",
+            "source_ip_cidr":[
+               "224.0.0.0/3",
+               "ff00::/8"
+            ]
+         }
+      ]
+   }
+}

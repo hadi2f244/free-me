@@ -1,0 +1,26 @@
+---
+
+- name: env-proxy disconnect
+  include_role:
+    name: "free-me/env-proxy"
+  vars:
+    connected: false
+  when: use_freeme == true
+
+- name: "Killall V2ray Connection"
+  shell: "killall v2ray"
+  check_mode: "{{ checkmode }}"
+  register: killall_v2ray
+  failed_when:
+    - killall_v2ray is failed
+    - '"no process found" not in killall_v2ray.stderr'
+
+- name: Delete V2ray Config Files
+  file:
+    path: "{{ freeme_v2ray_config_files_item }}"
+    state: absent
+  with_items:
+    - "/usr/local/etc/v2ray/config.json"
+  check_mode: "{{ checkmode }}"
+  loop_control:
+    loop_var: freeme_v2ray_config_files_item

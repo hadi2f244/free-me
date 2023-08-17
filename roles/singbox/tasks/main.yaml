@@ -1,0 +1,8 @@
+---
+
+- include_tasks: singbox_connect.yaml
+  when: connected == true and testmode == false
+
+- include_tasks: singbox_disconnect.yaml
+  when: connected == false and testmode == false
+

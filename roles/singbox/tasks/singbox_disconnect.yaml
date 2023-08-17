@@ -1,0 +1,46 @@
+---
+
+- name: env-proxy disconnect
+  include_role:
+    name: "free-me/env-proxy"
+  vars:
+    connected: false
+    http_proxy: "http://127.0.0.1:{{proxy_port}}"
+    https_proxy: "http://127.0.0.1:{{proxy_port}}"
+  when: set_env_proxy == true
+
+- name: apt-proxy disconnect
+  include_role:
+    name: "free-me/apt-proxy"
+  vars:
+    connected: false
+    http_proxy: "http://127.0.0.1:{{proxy_port}}"
+    https_proxy: "http://127.0.0.1:{{proxy_port}}"
+  when: set_apt_proxy == true
+
+- name: container-proxy disconnect
+  include_role:
+    name: "free-me/container-proxy"
+  vars:
+    connected: false
+    http_proxy: "http://127.0.0.1:{{proxy_port}}"
+    https_proxy: "http://127.0.0.1:{{proxy_port}}"
+  when: set_container_proxy == true
+
+- name: "Killall singbox Connection"
+  shell: "killall sing-box"
+  check_mode: "{{ checkmode }}"
+  register: killall_singbox
+  failed_when:
+    - killall_singbox is failed
+    - '"no process found" not in killall_singbox.stderr'
+
+- name: Delete singbox Config Files
+  file:
+    path: "{{ freeme_singbox_config_files_item }}"
+    state: absent
+  with_items:
+    - "/usr/local/etc/singbox/config.json"
+  check_mode: "{{ checkmode }}"
+  loop_control:
+    loop_var: freeme_singbox_config_files_item

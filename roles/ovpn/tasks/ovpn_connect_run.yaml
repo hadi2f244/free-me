@@ -1,0 +1,43 @@
+---
+
+- name: Install OVPN
+  apt: state=latest name=openvpn
+  check_mode: "{{ checkmode }}"
+
+- name: Disable OVPN on Startup
+  lineinfile:
+    dest: /etc/default/openvpn
+    regexp: '#AUTOSTART="none"'
+    line: 'AUTOSTART="none"'
+  check_mode: "{{ checkmode }}"
+
+- name: Copy auth Password File
+  template:
+    src: templates/auth.txt.j2
+    dest: "/etc/openvpn/{{ openvpn_client_conf_file | basename | splitext | first }}-auth.txt"
+  no_log: true
+  check_mode: "{{ checkmode }}"
+
+- name: Copy OVPN conf File
+  copy:
+    src: "{{ openvpn_client_conf_file }}"
+    dest: "/etc/openvpn/{{ openvpn_client_conf_file | basename }}"
+  check_mode: "{{ checkmode }}"
+
+- name: Change conf File with auth File
+  lineinfile:
+    dest: "/etc/openvpn/{{ openvpn_client_conf_file | basename }}"
+    regexp: '^auth-user-pass'
+    line: 'auth-user-pass {{ openvpn_client_conf_file | basename | splitext | first }}-auth.txt'
+  register: delete_conf_file
+  failed_when: 
+    - delete_conf_file is failed
+    - '"Destination /etc/openvpn/ovpn_con.conf does not exist" not in delete_conf_file.msg'
+  check_mode: "{{ checkmode }}"
+
+- name: Disable OVPN on startup
+  systemd:
+    name: "openvpn@{{ openvpn_client_conf_file | basename | splitext | first }}"
+    state: started
+    enabled: no # Disable OVPN on Startup
+  check_mode: "{{ checkmode }}"

@@ -1,0 +1,11 @@
+---
+- name: Add dnsproxy entry into /etc/resolv.conf
+  blockinfile:
+    path: /etc/resolv.conf
+    state: present
+    block: |
+        nameserver {{ dnsproxy_dns_1 }}
+        nameserver {{ dnsproxy_dns_2 }}
+    insertbefore: BOF
+  check_mode: "{{ checkmode }}"
+

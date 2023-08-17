@@ -1,0 +1,32 @@
+---
+
+- include_tasks: ovpn_connect.yaml
+
+- name: Check network over OVPN
+  uri:
+    url: "{{ check_site.site }}"  # restricted
+    method: GET
+    return_content: yes
+  check_mode: false
+  register: curl_output
+  failed_when: " curl_output.status != check_site.open_status_code "
+
+# Todo: add verboose
+# - name: Check network over OVPN | details
+#   debug:
+#     msg: "{{ curl_output.status }}"
+
+- include_tasks: ovpn_disconnect.yaml
+
+- name: Check network
+  uri:
+    url: "{{ check_site.site }}"  # restricted
+    method: GET
+    return_content: yes
+  check_mode: false
+  register: curl_output
+  failed_when: " curl_output.status != check_site.restricted_status_code "
+
+# - name: Check network after disconnection | details
+#   debug:
+#     msg: "{{ curl_output.status }}"

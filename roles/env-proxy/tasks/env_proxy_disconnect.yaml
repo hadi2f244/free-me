@@ -1,0 +1,12 @@
+---
+- name: Delete proxy env vars from /etc/environment
+  blockinfile:
+    path: /etc/environment
+    state: absent
+    block: |
+      http_proxy={{ http_proxy }}
+      https_proxy={{ http_proxy }}
+      HTTP_PROXY={{ http_proxy }}
+      HTTPS_PROXY={{ http_proxy }}
+    insertafter: EOF
+  check_mode: "{{ checkmode }}"

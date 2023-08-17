@@ -1,0 +1,61 @@
+---
+- name: Delete apt proxy configs (20-proxy)
+  block:
+  - name: Delete block
+    blockinfile:
+      path: "/etc/apt/apt.conf.d/20-proxy"
+      state: absent
+      block: |
+          Acquire::http::Proxy "{{ http_proxy }}";
+          Acquire::https::Proxy "{{ https_proxy }}";
+    register: delete_apt_proxy_11
+    failed_when:
+      - delete_apt_proxy_11 is failed
+      - '"Path /etc/apt/apt.conf.d/20-proxy does not exist" not in delete_apt_proxy_11.msg'
+    check_mode: "{{ checkmode }}"
+  - name: Delete lines to make sure proxy have not added by other tools
+    lineinfile:
+      path: "/etc/apt/apt.conf.d/20-proxy"
+      state: absent
+      regexp: "{{ apt_proxy_delete_line_1 }}"
+    register: delete_apt_proxy_12
+    failed_when:
+      - delete_apt_proxy_12 is failed
+      - '"Path /etc/apt/apt.conf.d/20-proxy does not exist" not in delete_apt_proxy_12.msg'
+    check_mode: "{{ checkmode }}"
+    loop:
+      - (?i)Acquire::http::Proxy ["']{{ http_proxy }}["'];
+      - (?i)Acquire::https::Proxy ["']{{ https_proxy }}["'];
+    loop_control:
+      loop_var: apt_proxy_delete_line_1
+
+- name: Delete apt proxy configs (apt.conf)
+  block:
+  - name: Delete block
+    blockinfile:
+      path: "/etc/apt/apt.conf"
+      state: absent
+      block: |
+          Acquire::http::Proxy "{{ http_proxy }}";
+          Acquire::https::Proxy "{{ https_proxy }}";
+      insertafter: EOF
+    register: delete_apt_proxy_21
+    failed_when:
+      - delete_apt_proxy_21 is failed
+      - '"Path /etc/apt/apt.conf does not exist" not in delete_apt_proxy_21.msg'
+    check_mode: "{{ checkmode }}"
+  - name: Delete lines to make sure proxy have not added by other tools
+    lineinfile:
+      path: "/etc/apt/apt.conf"
+      state: absent
+      regexp: "{{ apt_proxy_delete_line_2 }}"
+    register: delete_apt_proxy_22
+    failed_when:
+      - delete_apt_proxy_22 is failed
+      - '"Path /etc/apt/apt.conf does not exist" not in delete_apt_proxy_22.msg'
+    check_mode: "{{ checkmode }}"
+    loop:
+      - (?i)Acquire::http::Proxy ["']{{ http_proxy }}["'];
+      - (?i)Acquire::https::Proxy ["']{{ https_proxy }}["'];
+    loop_control:
+      loop_var: apt_proxy_delete_line_2

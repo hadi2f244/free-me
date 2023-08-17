@@ -1,0 +1,8 @@
+---
+
+- include_tasks: v2ray_connect.yaml
+  when: connected == true and testmode == false
+
+- include_tasks: v2ray_disconnect.yaml
+  when: connected == false and testmode == false
+

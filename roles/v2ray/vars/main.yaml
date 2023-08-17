@@ -1,0 +1,13 @@
+---
+connected: false
+checkmode: no
+testmode: no
+
+use_freeme: true
+
+v2ray_addr: ""
+v2ray_port: 443
+v2ray_uuid: ""
+
+proxy_socks_port: 10808
+proxy_http_port: 10809

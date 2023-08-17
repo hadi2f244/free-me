@@ -1,0 +1,10 @@
+---
+
+- include_tasks: test.yaml
+  when: testmode == true
+
+- include_tasks: dnsproxy_connect.yaml
+  when: connected == true and testmode == false
+
+- include_tasks: dnsproxy_disconnect.yaml
+  when: connected == false and testmode == false

@@ -1,0 +1,96 @@
+---
+
+- include_tasks: v2ray_disconnect.yaml
+
+- name: Create temporary file
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: v2ray
+  register: v2ray_tmp_dir
+  check_mode: "{{ checkmode }}"
+
+- name: Download v2ray
+  get_url:
+    url: "{{ v2ray_url }}"
+    dest: "{{ v2ray_tmp_dir.path }}"
+    mode: 755
+    force: yes
+  check_mode: "{{ checkmode }}"
+
+- name: Install Unzip
+  package:
+    name: unzip
+    state: present
+  check_mode: "{{ checkmode }}"
+
+- name: Unarchive v2ray
+  ansible.builtin.unarchive:
+    src: "{{ v2ray_tmp_dir.path }}/{{ v2ray_url|basename }}"
+    dest: "{{ v2ray_tmp_dir.path }}"
+    remote_src: yes
+  check_mode: "{{ checkmode }}"
+
+- name: Copy v2ray bin files
+  copy:
+    src: "{{ v2ray_tmp_dir.path }}/{{ v2ray_bin_item }}"
+    dest: "/usr/local/bin/"
+    mode: 0755
+    remote_src: true
+  loop_control:
+    loop_var: v2ray_bin_item
+  with_items:
+    - v2ray
+    - geoip.dat
+    - geosite.dat
+  check_mode: "{{ checkmode }}"
+
+- name: Copy v2ray systemd files
+  copy:
+    src: "{{ v2ray_tmp_dir.path }}/systemd/system/v2ray.service"
+    dest: "/etc/systemd/system/v2ray.service"
+    mode: 0644
+    remote_src: true
+  check_mode: "{{ checkmode }}"
+
+- name: Create /usr/local/etc/v2ray
+  file:
+    path: /usr/local/etc/v2ray
+    state: directory
+    mode: 0755
+  check_mode: "{{ checkmode }}"
+
+- name: Copy v2ray config
+  template:
+    src: "config.json.j2"
+    dest: "/usr/local/etc/v2ray/config.json"
+    mode: 0644
+    force: yes
+  check_mode: "{{ checkmode }}"
+
+- name: Config test
+  command: /usr/local/bin/v2ray test -c /usr/local/etc/v2ray/config.json
+  register: v2ray_configtest_result
+  check_mode: "{{ checkmode }}"
+
+- name: Enable and start v2ray service
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: true
+    daemon_reload: true
+    name: v2ray
+  check_mode: "{{ checkmode }}"
+
+- name: Delete tmp directory
+  ansible.builtin.file:
+    state: absent
+    path: "{{ v2ray_tmp_dir.path }}"
+  check_mode: "{{ checkmode }}"
+
+- name: env-proxy connect
+  include_role:
+    name: "free-me/env-proxy"
+  vars:
+    connected: true
+    http_proxy: "http://127.0.0.1:{{proxy_http_port}}"
+    https_proxy: "http://127.0.0.1:{{proxy_http_port}}"
+  when: use_freeme == true

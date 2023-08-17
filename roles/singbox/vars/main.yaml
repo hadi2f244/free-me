@@ -1,0 +1,23 @@
+---
+connected: false
+checkmode: no
+testmode: no
+
+use_freeme: true
+
+sb_addr: ""
+sb_port: 443
+sb_uuid: ""
+sb_publickey: ""
+sb_sni: ""
+sb_shortid: ""
+sb_flow: xtls-rprx-vision
+sb_transport_enabled: false
+sb_transport_service_name: ""
+sb_transport_type: ""
+
+proxy_port: 10809
+
+set_env_proxy: true
+set_apt_proxy: true
+set_container_proxy: true

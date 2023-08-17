@@ -1,0 +1,40 @@
+--- 
+    
+- include_tasks: ovpn_disconnect.yaml
+
+# https://serverfault.com/questions/659955/allowing-ssh-on-a-server-with-an-active-openvpn-client
+- name: "CRITICAL (DO NOT CANCELL) Change Route Table to Avoid Traffic Banning"
+  block:
+    - name:  "Change route table to avoid traffic banning | 1"
+      shell: "ip rule add from $(ip route get 1 | grep -Po '(?<=src )(\\S+)') table 121"
+    - name:  "Change route table to avoid traffic banning | 2"
+      shell: "ip route add table 121 to $(ip route get 1 | grep -Po '(?<=src )(\\S+)')/32 dev $(ip -4 route ls | grep default | grep -Po '(?<=dev )(\\S+)')"
+    - name:  "Change route table to avoid traffic banning | 3"
+      shell: "ip route add table 121 default via $(ip -4 route ls | grep default | grep -Po '(?<=via )(\\S+)')"
+  check_mode: "{{ checkmode }}"
+
+- include_tasks: ovpn_connect_run.yaml
+
+# - name: warning on ovpn 
+#   warning: "ovpn | If an unexpected error occurs, delete established vpn by running playbook with 'ovpn_disconnect' tag"
+
+- name: Warning for VPN Connection Related Issues
+  fail:
+    msg: "Warning: OVPN | If an unexpected error occurs, delete established vpn by running playbook with 'ovpn_disconnect' tag"
+  ignore_errors: True
+  check_mode: "{{ checkmode }}"
+
+- name: Waiting to Make Sure OVPN Connected ...
+  pause:
+    seconds: 20
+    prompt: "Waiting 20s to make sure ovpn connected ... "
+  check_mode: "{{ checkmode }}"
+# Todo: force a timeout on stopping from openvpn if ssh connection failed
+
+# Todo: Failed if ip not changed and revert 
+- name: Check VPN 
+  uri:
+    url: "https://icanhazip.com"
+    method: GET
+    return_content: yes
+  check_mode: "{{ checkmode }}"

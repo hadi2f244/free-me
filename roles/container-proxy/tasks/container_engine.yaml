@@ -1,0 +1,41 @@
+- name: Check Docker installed
+  service:
+    name: docker
+    state: reloaded
+    enabled: yes
+  ignore_errors: true
+  check_mode: true
+  register: docker_exists
+- include_tasks: "{{ connect_disconnect }}_docker_containerd_crio.yaml"
+  when:
+    - docker_exists is not failed
+  vars:
+    container_engine_name: docker
+
+- name: Check containerd installed
+  service:
+    name: containerd
+    state: reloaded
+    enabled: yes
+  ignore_errors: true
+  check_mode: true
+  register: containerd_exists
+- include_tasks: "{{ connect_disconnect }}_docker_containerd_crio.yaml"
+  when:
+    - containerd_exists is not failed
+  vars:
+    container_engine_name: containerd
+
+- name: Check crio installed
+  service:
+    name: crio
+    state: reloaded
+    enabled: yes
+  ignore_errors: true
+  check_mode: false
+  register: crio_exists
+- include_tasks: "{{ connect_disconnect }}_docker_containerd_crio.yaml"
+  when:
+    - crio_exists is not failed
+  vars:
+    container_engine_name: crio

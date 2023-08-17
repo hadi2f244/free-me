@@ -1,0 +1,121 @@
+---
+
+- include_tasks: singbox_disconnect.yaml
+
+- name: Create temporary file
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: singbox
+  register: singbox_tmp_dir
+  check_mode: "{{ checkmode }}"
+
+- name: Check singbox version
+  command: "sing-box version | head -1 | awk '{print $3}'"
+  changed_when: false
+  failed_when: false
+  register: singbox_tmp_version
+
+- name: Download and Install singbox
+  when: "singbox_tmp_version.rc != 0 and 'No such file or directory' in singbox_tmp_version.msg"
+  block:
+  - name: Download singbox
+    get_url:
+      url: "{{ singbox_url }}"
+      dest: "{{ singbox_tmp_dir.path }}"
+      mode: 755
+      force: yes
+    check_mode: "{{ checkmode }}"
+
+  - name: Unarchive singbox
+    ansible.builtin.unarchive:
+      src: "{{ singbox_tmp_dir.path }}/{{ singbox_url|basename }}"
+      dest: "{{ singbox_tmp_dir.path }}"
+      remote_src: yes
+    check_mode: "{{ checkmode }}"
+
+
+  - name: Copy singbox bin files
+    block:
+      - set_fact:
+          file_name_parts: "{{ singbox_url|basename|split('.') }}"
+      - set_fact:
+          folder_name: "{{ file_name_parts[:-2] | join('.') }}"
+      - name: 2
+        copy:
+          src: "{{ singbox_tmp_dir.path }}/{{ folder_name }}/{{ singbox_bin_item }}"
+          dest: "/usr/local/bin/"
+          mode: 0755
+          remote_src: true
+        loop_control:
+          loop_var: singbox_bin_item
+        with_items:
+          - sing-box
+        check_mode: "{{ checkmode }}"
+
+  - name: Copy singbox systemd files
+    template:
+      src: "singbox.service.j2"
+      dest: "/etc/systemd/system/singbox.service"
+      mode: 0644
+    check_mode: "{{ checkmode }}"
+
+  - name: Create /usr/local/etc/singbox
+    file:
+      path: /usr/local/etc/singbox
+      state: directory
+      mode: 0755
+    check_mode: "{{ checkmode }}"
+
+- name: Copy singbox config
+  template:
+    src: "config.json.j2"
+    dest: "/usr/local/etc/singbox/config.json"
+    mode: 0644
+    force: yes
+  check_mode: "{{ checkmode }}"
+
+- name: Config test
+  command: /usr/local/bin/sing-box check -c /usr/local/etc/singbox/config.json
+  register: singbox_configtest_result
+  check_mode: "{{ checkmode }}"
+
+- name: Enable and start singbox service
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: true
+    daemon_reload: true
+    name: singbox
+  check_mode: "{{ checkmode }}"
+
+- name: Delete tmp directory
+  ansible.builtin.file:
+    state: absent
+    path: "{{ singbox_tmp_dir.path }}"
+  check_mode: "{{ checkmode }}"
+
+- name: env-proxy connect
+  include_role:
+    name: "free-me/env-proxy"
+  vars:
+    connected: true
+    http_proxy: "http://127.0.0.1:{{proxy_port}}"
+    https_proxy: "http://127.0.0.1:{{proxy_port}}"
+  when: set_env_proxy == true
+
+- name: apt-proxy connect
+  include_role:
+    name: "free-me/apt-proxy"
+  vars:
+    connected: true
+    http_proxy: "http://127.0.0.1:{{proxy_port}}"
+    https_proxy: "http://127.0.0.1:{{proxy_port}}"
+  when: set_apt_proxy == true
+
+- name: container-proxy connect
+  include_role:
+    name: "free-me/container-proxy"
+  vars:
+    connected: true
+    http_proxy: "http://127.0.0.1:{{proxy_port}}"
+    https_proxy: "http://127.0.0.1:{{proxy_port}}"
+  when: set_container_proxy == true

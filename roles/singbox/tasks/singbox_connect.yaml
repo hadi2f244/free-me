@@ -10,13 +10,13 @@
   check_mode: "{{ checkmode }}"
 
 - name: Check singbox version
-  command: "sing-box version | head -1 | awk '{print $3}'"
+  command: sh -c "sing-box version | awk 'NR==1 {print $3}'"
   changed_when: false
   failed_when: false
   register: singbox_tmp_version
 
 - name: Download and Install singbox
-  when: "singbox_tmp_version.rc != 0 and 'No such file or directory' in singbox_tmp_version.msg"
+  when: (singbox_tmp_version.rc != 0 and 'No such file or directory' in singbox_tmp_version.msg) or (singbox_tmp_version.stdout != singbox_version)
   block:
   - name: Download singbox
     get_url:
@@ -66,18 +66,29 @@
       mode: 0755
     check_mode: "{{ checkmode }}"
 
-- name: Copy singbox config
-  template:
-    src: "config.json.j2"
-    dest: "/usr/local/etc/singbox/config.json"
-    mode: 0644
-    force: yes
-  check_mode: "{{ checkmode }}"
 
-- name: Config test
-  command: /usr/local/bin/sing-box check -c /usr/local/etc/singbox/config.json
-  register: singbox_configtest_result
-  check_mode: "{{ checkmode }}"
+- name: Copy singbox config
+  block:
+  - name: Render config template
+    template:
+      src: "config.json.j2"
+      dest: "/usr/local/etc/singbox/config.json"
+      mode: 0644
+      force: yes
+      validate: /usr/local/bin/sing-box check -c %s
+      backup: "{{ backup_previous_config }}"
+    check_mode: "{{ checkmode }}"
+    when: use_custom_config == false
+  - name: Copy custom configs
+    copy:
+      content: "{{ custom_config }}"
+      dest: "/usr/local/etc/singbox/config.json"
+      mode: 0644
+      force: yes
+      validate: /usr/local/bin/sing-box check -c %s
+      backup: "{{ backup_previous_config }}"
+    check_mode: "{{ checkmode }}"
+    when: use_custom_config == true
 
 - name: Enable and start singbox service
   ansible.builtin.systemd:

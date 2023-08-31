@@ -5,6 +5,10 @@ testmode: no
 
 use_freeme: true
 
+set_env_proxy: true
+set_apt_proxy: true
+set_container_proxy: true
+
 v2ray_addr: ""
 v2ray_port: 443
 v2ray_uuid: ""
@@ -12,3 +16,21 @@ v2ray_trojan_password: ""
 
 proxy_socks_port: 10808
 proxy_http_port: 10809
+
+backup_previous_config: false
+
+use_custom_config: false
+custom_config: |
+  {
+    "inbounds":[
+        {
+          ...
+        }
+    ],
+    "outbounds":[
+        ...
+    ],
+    "route":{
+        ...
+    }
+  }

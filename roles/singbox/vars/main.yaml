@@ -5,6 +5,10 @@ testmode: no
 
 use_freeme: true
 
+set_env_proxy: true
+set_apt_proxy: true
+set_container_proxy: true
+
 sb_addr: ""
 sb_port: 443
 sb_uuid: ""
@@ -18,6 +22,20 @@ sb_transport_type: ""
 
 proxy_port: 10809
 
-set_env_proxy: true
-set_apt_proxy: true
-set_container_proxy: true
+backup_previous_config: false
+
+use_custom_config: false
+custom_config: |
+  {
+    "inbounds":[
+        {
+          ...
+        }
+    ],
+    "outbounds":[
+        ...
+    ],
+    "route":{
+        ...
+    }
+  }

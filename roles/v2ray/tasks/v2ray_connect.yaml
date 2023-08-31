@@ -9,68 +9,88 @@
   register: v2ray_tmp_dir
   check_mode: "{{ checkmode }}"
 
-- name: Download v2ray
-  get_url:
-    url: "{{ v2ray_url }}"
-    dest: "{{ v2ray_tmp_dir.path }}"
-    mode: 755
-    force: yes
-  check_mode: "{{ checkmode }}"
+- name: Check v2ray version
+  command: sh -c "v2ray version |  awk '{match($0, /[0-9]+\.[0-9]+\.[0-9]+/, version); print version[0]}' | head -1"
+  changed_when: false
+  failed_when: false
+  register: v2ray_tmp_version
 
-- name: Install Unzip
-  package:
-    name: unzip
-    state: present
-  check_mode: "{{ checkmode }}"
+- name: Download and Install v2ray
+  when: (v2ray_tmp_version.rc != 0 and 'No such file or directory' in v2ray_tmp_version.msg) or (v2ray_tmp_version.stdout != v2ray_version)
+  block:
+  - name: Download v2ray
+    get_url:
+      url: "{{ v2ray_url }}"
+      dest: "{{ v2ray_tmp_dir.path }}"
+      mode: 755
+      force: yes
+    check_mode: "{{ checkmode }}"
 
-- name: Unarchive v2ray
-  ansible.builtin.unarchive:
-    src: "{{ v2ray_tmp_dir.path }}/{{ v2ray_url|basename }}"
-    dest: "{{ v2ray_tmp_dir.path }}"
-    remote_src: yes
-  check_mode: "{{ checkmode }}"
+  - name: Install Unzip
+    package:
+      name: unzip
+      state: present
+    check_mode: "{{ checkmode }}"
 
-- name: Copy v2ray bin files
-  copy:
-    src: "{{ v2ray_tmp_dir.path }}/{{ v2ray_bin_item }}"
-    dest: "/usr/local/bin/"
-    mode: 0755
-    remote_src: true
-  loop_control:
-    loop_var: v2ray_bin_item
-  with_items:
-    - v2ray
-    - geoip.dat
-    - geosite.dat
-  check_mode: "{{ checkmode }}"
+  - name: Unarchive v2ray
+    ansible.builtin.unarchive:
+      src: "{{ v2ray_tmp_dir.path }}/{{ v2ray_url|basename }}"
+      dest: "{{ v2ray_tmp_dir.path }}"
+      remote_src: yes
+    check_mode: "{{ checkmode }}"
 
-- name: Copy v2ray systemd files
-  copy:
-    src: "{{ v2ray_tmp_dir.path }}/systemd/system/v2ray.service"
-    dest: "/etc/systemd/system/v2ray.service"
-    mode: 0644
-    remote_src: true
-  check_mode: "{{ checkmode }}"
+  - name: Copy v2ray bin files
+    copy:
+      src: "{{ v2ray_tmp_dir.path }}/{{ v2ray_bin_item }}"
+      dest: "/usr/local/bin/"
+      mode: 0755
+      remote_src: true
+    loop_control:
+      loop_var: v2ray_bin_item
+    with_items:
+      - v2ray
+      - geoip.dat
+      - geosite.dat
+    check_mode: "{{ checkmode }}"
 
-- name: Create /usr/local/etc/v2ray
-  file:
-    path: /usr/local/etc/v2ray
-    state: directory
-    mode: 0755
-  check_mode: "{{ checkmode }}"
+  - name: Copy v2ray systemd files
+    copy:
+      src: "{{ v2ray_tmp_dir.path }}/systemd/system/v2ray.service"
+      dest: "/etc/systemd/system/v2ray.service"
+      mode: 0644
+      remote_src: true
+    check_mode: "{{ checkmode }}"
 
-- name: Copy v2ray config
-  template:
-    src: "config.json.j2"
-    dest: "/usr/local/etc/v2ray/config.json"
-    mode: 0644
-    force: yes
-  check_mode: "{{ checkmode }}"
+  - name: Create /usr/local/etc/v2ray
+    file:
+      path: /usr/local/etc/v2ray
+      state: directory
+      mode: 0755
+    check_mode: "{{ checkmode }}"
 
-- name: Config test
-  command: /usr/local/bin/v2ray test -c /usr/local/etc/v2ray/config.json
-  register: v2ray_configtest_result
-  check_mode: "{{ checkmode }}"
+
+- name: Copy singbox config
+  block:
+  - name: Render config template
+    template:
+      src: "config.json.j2"
+      dest: "/usr/local/etc/v2ray/config.json"
+      mode: 0644
+      force: yes
+      validate: /usr/local/bin/v2ray test -c  %s
+      backup: "{{ backup_previous_config }}"
+    check_mode: "{{ checkmode }}"
+    when: use_custom_config == false
+  - name: Copy custom configs
+    copy:
+      content: "{{ custom_config }}"
+      dest: "/usr/local/etc/v2ray/config.json"
+      mode: 0644
+      force: yes
+      validate: /usr/local/bin/v2ray test -c  %s
+      backup: "{{ backup_previous_config }}"
+    check_mode: "{{ checkmode }}"
+    when: use_custom_config == true
 
 - name: Enable and start v2ray service
   ansible.builtin.systemd:

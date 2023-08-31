@@ -8,6 +8,7 @@ use_freeme: true
 v2ray_addr: ""
 v2ray_port: 443
 v2ray_uuid: ""
+v2ray_trojan_password: ""
 
 proxy_socks_port: 10808
 proxy_http_port: 10809

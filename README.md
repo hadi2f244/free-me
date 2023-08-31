@@ -19,8 +19,8 @@ I also provide simple Ansible playbooks to use diffrent free-me role in [free-me
 Feel free to contribute your contribution to this project. It is simple and I really appreciate any help. Create an Issue for any question, suggestion or problem.
 
 # Todo List
-+ Add completely manual flag for vpn configs: singbox, v2ray and openvpn roles
-+ V2ray: Trojan + Vless + Vmess
++ Add completely manual flag for vpn configs: openvpn role
++ V2ray: Vless + Vmess
 + Roles dependencies and documentation
 + L2TP
 + PPTP

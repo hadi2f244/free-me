@@ -1,2 +1,2 @@
-singbox_version: "1.3.6"
+singbox_version: "1.4.0"
 singbox_url: "https://github.com/SagerNet/sing-box/releases/download/v{{singbox_version}}/sing-box-{{singbox_version}}-linux-amd64.tar.gz"

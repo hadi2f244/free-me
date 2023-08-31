@@ -9,3 +9,6 @@ check_site:
   site: "https://ipinfo.io"
   restricted_status_code: 403
   open_status_code: 200
+
+dnsproxy_dns_1: "1.1.1.1"
+dnsproxy_dns_2: "8.8.8.8"

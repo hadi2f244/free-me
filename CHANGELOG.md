@@ -2,10 +2,15 @@
 Free-me Collection Release Notes
 ==============================================
 
+v1.1.2
+=======
++ Add Use Cases documentation
++ Resolve v2ray env_proxy, apt_proxy and container_proxy issue
+
 v1.1.1
 =======
 + Update Readme
-+ delete use_freeme variable
++ Delete use_freeme variable
 
 v1.1.0
 =======

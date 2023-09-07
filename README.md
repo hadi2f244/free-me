@@ -55,6 +55,7 @@ If you've ever considered joining the tech party, here's your invite! Contribute
 > Note: Feel free to contribute your contribution to this project. I really appreciate contributions. For example, adding new protocols and also improving current roles such as adding new protocols to v2ray/singbox role templates.
 
 # Todo List
++ Remaining `HTTP_PROXY` and `HTTPS_PROXY` variable after runnging `off.yml` on localhost
 + Check v2ray/singbox services status after starting (Assert if there is an issue on service restarting)
 + Add Socks to *env_proxy*, *container_proxy*, *apt_proxy*, *singbox*, and *v2ray*
 + Add link based V2ray/Singbox configurations.

@@ -113,4 +113,3 @@
     connected: true
     http_proxy: "http://127.0.0.1:{{proxy_http_port}}"
     https_proxy: "http://127.0.0.1:{{proxy_http_port}}"
-  when: use_freeme == true

@@ -5,7 +5,6 @@
     name: "hadi2f244.free_me.env_proxy"
   vars:
     connected: false
-  when: use_freeme == true
 
 - name: "Killall V2ray Connection"
   shell: "killall v2ray"

@@ -1,9 +1,7 @@
---- 
+---
 connected: false
 checkmode: no
 testmode: no
-
-use_freeme: true
 
 check_site:
   site: "https://ipinfo.io"

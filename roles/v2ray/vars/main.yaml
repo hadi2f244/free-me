@@ -3,8 +3,6 @@ connected: false
 checkmode: no
 testmode: no
 
-use_freeme: true
-
 set_env_proxy: true
 set_apt_proxy: true
 set_container_proxy: true

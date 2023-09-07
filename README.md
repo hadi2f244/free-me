@@ -1,13 +1,17 @@
 # Ansible Collection - hadi2f244.free_me
 
-An Ansible collection containing different proxy and VPN clients.
+A versatile Ansible collection for proxy and VPN clients.
 
 # Motivation
 
 I created this *Ansible collection* with a deep motivation to empower DevOps, SRE, and sysadmins in regions facing filtering and sanctions, such as Iran. My goal is to help them overcome the obstacles they encounter when trying to install essential tools like *Docker* and *Kubernetes*. I provided practical solutions within Ansible playbooks, including addressing issues like installing Kubernetes with *Kubespray*, package installations, and downloading container images.
 
 # Components/Roles
-Every type of client is in a different role. Some of them are VPN/proxy clients and some are just a connection to a proxy. This is the list of roles:
+Every type of client is in a different role. Some of them are VPN/proxy clients and some are just a connection to a proxy.
+
+"The main idea is to simplify all the solutions to work as `on` and `off` module. In Ansible it means all of starting/connecting and stopping/disconnecting steps are done in `on.yml` and `off.yml` respectively"
+
+List of roles:
 
 Proxy connectors:
 
@@ -32,8 +36,15 @@ Clients:
 # Local Usage
 It is recommended to install the collection by **ansible-galaxy collection** command, But there are some situations where you need to edit the role by yourself manually. Follow [Local test collection](https://github.com/hadi2f244/free-me-test#local-test-collection) section in free-me-test project.
 
-# Documentations
-I have used this code during different Ansible projects (e.g. Kubespray), I would share my experiences in the [Documentation]() separately.
+# Use Cases
+I have used this code during different Ansible projects (e.g. Kubespray), I would share my experiences in the [Documentation](https://github.com/hadi2f244/free-me/tree/main/docs) separately.
+
++ [Roles Details](https://github.com/hadi2f244/free-me/tree/main/docs/Roles.md)
++ [Environment Variable Proxy](https://github.com/hadi2f244/free-me/tree/main/docs/EnvProxy.md)
++ [Container Runtime Proxy](https://github.com/hadi2f244/free-me/tree/main/docs/ConatinerRuntimes.md)
++ [Shecan](https://github.com/hadi2f244/free-me/tree/main/docs/Shecan.md)
++ [Kubespray](https://github.com/hadi2f244/free-me/tree/main/docs/Kubespray.md)
+
 
 # Contribution
 If you've ever considered joining the tech party, here's your invite! Contribute your skills (code), and together, we'll make tech tasks a breeze. Your help is a game-changer! 🚀
@@ -44,6 +55,8 @@ If you've ever considered joining the tech party, here's your invite! Contribute
 > Note: Feel free to contribute your contribution to this project. I really appreciate contributions. For example, adding new protocols and also improving current roles such as adding new protocols to v2ray/singbox role templates.
 
 # Todo List
++ Check v2ray/singbox services status after starting (Assert if there is an issue on service restarting)
++ Add Socks to *env_proxy*, *container_proxy*, *apt_proxy*, *singbox*, and *v2ray*
 + Add link based V2ray/Singbox configurations.
 + SSH Tunnel
 + Tshoot OVPN, and Add a completely manual flag for VPN configs: OVPN role

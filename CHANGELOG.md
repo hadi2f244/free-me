@@ -2,7 +2,10 @@
 Free-me Collection Release Notes
 ==============================================
 
-
+v1.1.1
+=======
++ Update Readme
++ delete use_freeme variable
 
 v1.1.0
 =======

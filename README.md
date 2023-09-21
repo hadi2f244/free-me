@@ -1,7 +1,6 @@
 # Ansible Collection - hadi2f244.free_me
 
-A versatile Ansible collection for proxy and VPN clients.
-
+A versatile Ansible collection for proxy and VPN clients such as http/https proxy for apt and container runtimes, v2ray/singbox, openvpn, etc.
 # Motivation
 
 I created this *Ansible collection* with a deep motivation to empower DevOps, SRE, and sysadmins in regions facing filtering and sanctions, such as Iran. My goal is to help them overcome the obstacles they encounter when trying to install essential tools like *Docker* and *Kubernetes*. I provided practical solutions within Ansible playbooks, including addressing issues like installing Kubernetes with *Kubespray*, package installations, and downloading container images.

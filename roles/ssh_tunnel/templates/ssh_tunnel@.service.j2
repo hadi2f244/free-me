@@ -1,0 +1,16 @@
+[Unit]
+Description=Reverse ssh
+After=network.target
+
+[Service]
+User=root
+Group=root
+EnvironmentFile=/etc/default/ssh_tunnel@main
+ExecStartPre=/bin/bash -c "ssh-keygen -R [${TUNNEL_SERVER_ADDR}]:${TUNNEL_SERVER_PORT}" || /bin/true
+ExecStart=/usr/bin/ssh -N -T -q -D [${PROXY_ADDR}]:${PROXY_PORT}" -o  "ServerAliveInterval 10" -o "ExitOnForwardFailure yes" -o "StrictHostKeyChecking no" ${TUNNEL_SERVER_USER}@${TUNNEL_SERVER_ADDR} -p ${TUNNEL_SERVER_PORT}
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
+

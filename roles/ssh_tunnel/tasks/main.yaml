@@ -1,0 +1,8 @@
+---
+
+- include_tasks: ssh_tunnel_connect.yaml
+  when: connected == true and testmode == false
+
+- include_tasks: ssh_tunnel_disconnect.yaml
+  when: connected == false and testmode == false
+

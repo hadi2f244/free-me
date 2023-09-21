@@ -1,0 +1,15 @@
+---
+connected: false
+checkmode: no
+testmode: no
+
+set_env_proxy: true
+set_apt_proxy: true
+set_container_proxy: true
+
+
+tunnel_server_user: root
+tunnel_server_addr: 94.228.168.121
+tunnel_server_port: 22
+proxy_addr: 127.0.0.1
+proxy_port: 10808
